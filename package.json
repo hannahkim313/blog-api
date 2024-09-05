@@ -6,9 +6,9 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./bin/www",
-    "devstart": "nodemon -r dotenv/config ./bin/www",
-    "serverstart": "DEBUG=blog-api:* npm run devstart"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "debug:watch": "nodemon --inspect --watch 'src/**/*.js' src/app.js"
   },
   "keywords": [],
   "author": "",
