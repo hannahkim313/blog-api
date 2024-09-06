@@ -23,7 +23,7 @@ model User {
   articles  Article[]
   comments  Comment[]
 
-  @@map("user")
+  @@map("users")
 }
 
 model Article {
@@ -37,7 +37,7 @@ model Article {
   isPublished Boolean   @default(false)
   comments    Comment[]
 
-  @@map("article")
+  @@map("articles")
 }
 
 model Comment {
@@ -49,5 +49,5 @@ model Comment {
   authorId  Int
   createdAt DateTime @default(now())
 
-  @@map("comment")
+  @@map("comments")
 }
