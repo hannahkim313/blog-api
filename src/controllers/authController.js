@@ -12,9 +12,33 @@ const prisma = new PrismaClient();
 
 const authGetProfile = (req, res) => sendResponse(res, 200, { user: req.user });
 
-const authUpdateProfile = (req, res) => {
-  // do something
-};
+const authUpdateProfile = asyncHandler(async (req, res) => {
+  if (handleValidationErrors(req, res, 400)) {
+    return;
+  }
+
+  const { password, ...updatedData } = req.body;
+
+  if (password) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    updatedData.password = hashedPassword;
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: req.user.id },
+    data: updatedData,
+  });
+
+  sendResponse(res, 200, {
+    user: {
+      id: updatedUser.id,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      email: updatedUser.email,
+      username: updatedUser.username,
+    },
+  });
+});
 
 const authDeleteProfile = (req, res) => {
   // do something

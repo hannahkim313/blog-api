@@ -1,6 +1,9 @@
 const { Router } = require('express');
 const authController = require('../controllers/authController');
-const validateRegister = require('../validators/registerValidators');
+const {
+  validateUserCreation,
+  validateUserUpdate,
+} = require('../validators/userValidators');
 const validateLogin = require('../validators/loginValidators');
 const verifyToken = require('../middleware/verifyToken');
 
@@ -8,11 +11,16 @@ const authRouter = Router();
 
 authRouter.get('/profile', verifyToken, authController.authGetProfile);
 
-authRouter.put('/profile', verifyToken, authController.authUpdateProfile);
+authRouter.put(
+  '/profile',
+  verifyToken,
+  validateUserUpdate,
+  authController.authUpdateProfile
+);
 
 authRouter.delete('/profile', verifyToken, authController.authDeleteProfile);
 
-authRouter.post('/register', validateRegister, authController.authRegister);
+authRouter.post('/register', validateUserCreation, authController.authRegister);
 
 authRouter.post('/login', validateLogin, authController.authLogin);
 
