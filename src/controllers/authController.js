@@ -72,9 +72,7 @@ const authLogin = asyncHandler(async (req, res, next) => {
   })(req, res, next);
 });
 
-const authLogout = (req, res) => {
-  res.send('not yet implemented');
-};
+const authLogout = (req, res) => sendResponse(res, 200);
 
 module.exports = {
   authProfile,
