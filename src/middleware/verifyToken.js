@@ -1,14 +1,27 @@
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
+const { logError } = require('../utils/errorUtils');
 const sendResponse = require('../utils/sendResponse');
 
 const verifyToken = (req, res, next) => {
-  const bearerHeader = req.headers['authorization'];
+  const token = req.headers['authorization'].split(' ')[1];
 
-  if (typeof bearerHeader !== 'undefined') {
-    req.token = bearerHeader.split(' ')[1];
-    next();
-  } else {
-    sendResponse(res, 403);
+  if (!token) {
+    logError('Token required');
+
+    return sendResponse(res, 401);
   }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      logError('Invalid token');
+
+      return sendResponse(res, 403);
+    }
+
+    req.user = user;
+    next();
+  });
 };
 
 module.exports = verifyToken;

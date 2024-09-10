@@ -10,15 +10,7 @@ const sendResponse = require('../utils/sendResponse');
 
 const prisma = new PrismaClient();
 
-const authGetProfile = (req, res) => {
-  jwt.verify(req.token, process.env.JWT_SECRET, (err, authData) => {
-    if (err) {
-      sendResponse(res, 403);
-    } else {
-      sendResponse(res, 200, { authData });
-    }
-  });
-};
+const authGetProfile = (req, res) => sendResponse(res, 200, { user: req.user });
 
 const authUpdateProfile = (req, res) => {
   // do something
