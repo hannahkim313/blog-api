@@ -10,7 +10,7 @@ const sendResponse = require('../utils/sendResponse');
 
 const prisma = new PrismaClient();
 
-const authProfile = (req, res) => {
+const authGetProfile = (req, res) => {
   jwt.verify(req.token, process.env.JWT_SECRET, (err, authData) => {
     if (err) {
       sendResponse(res, 403);
@@ -18,6 +18,14 @@ const authProfile = (req, res) => {
       sendResponse(res, 200, { authData });
     }
   });
+};
+
+const authUpdateProfile = (req, res) => {
+  // do something
+};
+
+const authDeleteProfile = (req, res) => {
+  // do something
 };
 
 const authRegister = asyncHandler(async (req, res) => {
@@ -75,7 +83,9 @@ const authLogin = asyncHandler(async (req, res, next) => {
 const authLogout = (req, res) => sendResponse(res, 200);
 
 module.exports = {
-  authProfile,
+  authGetProfile,
+  authUpdateProfile,
+  authDeleteProfile,
   authRegister,
   authLogin,
   authLogout,

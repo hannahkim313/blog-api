@@ -4,7 +4,6 @@ const session = require('express-session');
 const passport = require('passport');
 require('./config/passport');
 const authRouter = require('./routes/authRouter');
-const usersRouter = require('./routes/usersRouter');
 const articlesRouter = require('./routes/articlesRouter');
 const commentsRouter = require('./routes/commentsRouter');
 
@@ -28,7 +27,6 @@ app.use(passport.session());
 
 // Define the routes
 app.use('/auth', authRouter);
-app.use('/users', usersRouter);
 app.use('/articles', articlesRouter);
 app.use('/articles/:articleId/comments', commentsRouter);
 

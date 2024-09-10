@@ -6,7 +6,11 @@ const verifyToken = require('../middleware/verifyToken');
 
 const authRouter = Router();
 
-authRouter.get('/profile', verifyToken, authController.authProfile);
+authRouter.get('/profile', verifyToken, authController.authGetProfile);
+
+authRouter.put('/profile', verifyToken, authController.authUpdateProfile);
+
+authRouter.delete('/profile', verifyToken, authController.authDeleteProfile);
 
 authRouter.post('/register', validateRegister, authController.authRegister);
 
