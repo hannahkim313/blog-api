@@ -17,7 +17,7 @@ const handleValidationErrors = (req, res, status) => {
 };
 
 const handleCustomErrors = (err) => {
-  logError('An error occurred');
+  logError('An validation error occurred');
 
   throw new Error(err.message);
 };
