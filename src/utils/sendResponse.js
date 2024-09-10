@@ -3,6 +3,7 @@ const { logError } = require('./errorUtils');
 const statusMessages = {
   200: 'OK',
   201: 'Resource created successfully',
+  204: 'No Content',
   400: 'Bad Request',
   401: 'Unauthorized',
   403: 'You do not have permission to access this resource',

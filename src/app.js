@@ -6,6 +6,8 @@ require('./config/passport');
 const authRouter = require('./routes/authRouter');
 const articlesRouter = require('./routes/articlesRouter');
 const commentsRouter = require('./routes/commentsRouter');
+const sendResponse = require('./utils/sendResponse');
+const { logError } = require('./utils/errorUtils');
 
 const app = express();
 
@@ -29,6 +31,12 @@ app.use(passport.session());
 app.use('/auth', authRouter);
 app.use('/articles', articlesRouter);
 app.use('/articles/:articleId/comments', commentsRouter);
+
+// User error-handling middleware
+app.use((err, req, res, next) => {
+  logError(err.stack);
+  sendResponse(res, 500);
+});
 
 // Define the server
 const PORT = process.env.PORT || 3000;

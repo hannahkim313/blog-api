@@ -40,9 +40,13 @@ const authUpdateProfile = asyncHandler(async (req, res) => {
   });
 });
 
-const authDeleteProfile = (req, res) => {
-  // do something
-};
+const authDeleteProfile = asyncHandler(async (req, res) => {
+  await prisma.user.delete({
+    where: { id: req.user.id },
+  });
+
+  sendResponse(res, 204);
+});
 
 const authRegister = asyncHandler(async (req, res) => {
   if (handleValidationErrors(req, res, 400)) {
