@@ -1,18 +1,27 @@
+require('dotenv').config();
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const { PrismaClient } = require('@prisma/client');
-const { logError, handleValidationErrors } = require('../utils/errorHelpers');
+const { handleValidationErrors } = require('../utils/errorHelpers');
+const { logError } = require('../utils/errorUtils');
+const sendResponse = require('../utils/sendResponse');
 
 const prisma = new PrismaClient();
 
 const authProfile = (req, res) => {
-  res.send('not yet implemented');
+  jwt.verify(req.token, process.env.JWT_SECRET, (err, authData) => {
+    if (err) {
+      sendResponse(res, 403);
+    } else {
+      sendResponse(res, 200, { authData });
+    }
+  });
 };
 
 const authRegister = asyncHandler(async (req, res) => {
-  if (handleValidationErrors(req, res, 400, 'Bad Request')) {
+  if (handleValidationErrors(req, res, 400)) {
     return;
   }
 
@@ -29,11 +38,11 @@ const authRegister = asyncHandler(async (req, res) => {
     },
   });
 
-  res.status(201).json({ status: 'User registered successfully' });
+  sendResponse(res, 201);
 });
 
 const authLogin = asyncHandler(async (req, res, next) => {
-  if (handleValidationErrors(req, res, 401, 'Unauthorized')) {
+  if (handleValidationErrors(req, res, 401)) {
     return;
   }
 
@@ -43,7 +52,7 @@ const authLogin = asyncHandler(async (req, res, next) => {
     }
 
     if (!user) {
-      return res.status(401).json({ error: info.message });
+      sendResponse(res, 401, { error: info.message });
     }
 
     jwt.sign(
@@ -54,12 +63,10 @@ const authLogin = asyncHandler(async (req, res, next) => {
         if (err) {
           logError(err.message);
 
-          return res
-            .status(500)
-            .json({ status: 500, message: 'Internal Server Error' });
+          return sendResponse(res, 500);
         }
 
-        res.status(200).json({ token });
+        sendResponse(res, 200, { token });
       }
     );
   })(req, res, next);
