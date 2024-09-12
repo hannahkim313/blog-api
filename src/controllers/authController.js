@@ -3,12 +3,10 @@ const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../../prisma/prismaClient');
 const { handleValidationErrors } = require('../utils/errorHelpers');
 const { logError } = require('../utils/errorUtils');
 const sendResponse = require('../utils/sendResponse');
-
-const prisma = new PrismaClient();
 
 const authGetProfile = (req, res) => sendResponse(res, 200, { user: req.user });
 

@@ -1,8 +1,6 @@
 const bcrypt = require('bcryptjs');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../../prisma/prismaClient');
 const { handleCustomErrors } = require('../utils/errorHelpers');
-
-const prisma = new PrismaClient();
 
 const checkUsernameExists = async (username) => {
   try {

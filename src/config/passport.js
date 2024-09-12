@@ -1,12 +1,10 @@
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../../prisma/prismaClient');
 const passport = require('passport');
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const LocalStrategy = require('passport-local').Strategy;
-
-const prisma = new PrismaClient();
 
 passport.use(
   new LocalStrategy(async (username, password, done) => {
