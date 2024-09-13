@@ -5,19 +5,24 @@ const { handleValidationErrors } = require('../utils/errorHelpers');
 
 const articlesGetAll = asyncHandler(async (req, res) => {
   const { page = 1, pageSize = 10 } = req.query;
+  const { role } = req.user;
+  const isAuthor = role === 'author';
 
   const articles = await prisma.article.findMany({
     skip: (page - 1) * pageSize,
-    take: parseInt(pageSize),
+    take: parseInt(pageSize, 10),
     select: { id: true, title: true },
+    where: !isAuthor ? { isPublished: true } : {},
   });
 
-  const totalArticles = await prisma.article.count();
+  const totalArticles = await prisma.article.count({
+    where: !isAuthor ? { isPublished: true } : {},
+  });
 
   sendResponse(res, 200, {
     articles,
     totalPages: Math.ceil(totalArticles / pageSize),
-    currentPage: parseInt(page),
+    currentPage: parseInt(page, 10),
   });
 });
 

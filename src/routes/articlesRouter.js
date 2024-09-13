@@ -6,7 +6,7 @@ const { validateArticleCreation } = require('../validators/articleValidators');
 
 const articlesRouter = Router();
 
-articlesRouter.get('/', articlesController.articlesGetAll);
+articlesRouter.get('/', verifyToken, articlesController.articlesGetAll);
 
 articlesRouter.post(
   '/',

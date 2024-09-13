@@ -4,7 +4,15 @@ const { logError } = require('../utils/errorUtils');
 const sendResponse = require('../utils/sendResponse');
 
 const verifyToken = (req, res, next) => {
-  const token = req.headers['authorization'].split(' ')[1];
+  const authHeader = req.headers['authorization'];
+
+  if (!authHeader) {
+    req.user = { role: 'guest' };
+
+    return next();
+  }
+
+  const token = authHeader.split(' ')[1];
 
   if (!token) {
     logError('Token required');
