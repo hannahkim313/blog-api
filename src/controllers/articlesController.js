@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const prisma = require('../../prisma/prismaClient');
 const sendResponse = require('../utils/sendResponse');
+const { handleValidationErrors } = require('../utils/errorHelpers');
 
 const articlesGetAll = asyncHandler(async (req, res) => {
   const { page = 1, pageSize = 10 } = req.query;
@@ -20,9 +21,26 @@ const articlesGetAll = asyncHandler(async (req, res) => {
   });
 });
 
-const articlesCreate = (req, res) => {
-  res.send('not yet implemented');
-};
+const articlesCreate = asyncHandler(async (req, res) => {
+  if (handleValidationErrors(req, res, 400)) {
+    return;
+  }
+
+  const { title, content, isPublished } = req.body;
+
+  const newArticle = await prisma.article.create({
+    data: {
+      title,
+      content,
+      authorId: req.user.id,
+      isPublished,
+    },
+  });
+
+  sendResponse(res, 201, {
+    articleId: newArticle.id,
+  });
+});
 
 const articlesGetById = (req, res) => {
   res.send('not yet implemented');

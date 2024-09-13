@@ -82,7 +82,7 @@ const authLogin = asyncHandler(async (req, res, next) => {
     }
 
     jwt.sign(
-      { id: user.id },
+      { id: user.id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '15m' },
       (err, token) => {
