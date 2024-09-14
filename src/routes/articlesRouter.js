@@ -5,6 +5,7 @@ const authorizeRoles = require('../middleware/authorizeRoles');
 const {
   validateArticleCreation,
   validateArticleId,
+  validateArticleUpdate,
 } = require('../validators/articleValidators');
 
 const articlesRouter = Router();
@@ -26,7 +27,12 @@ articlesRouter.get(
   articlesController.articlesGetById
 );
 
-articlesRouter.put('/:articleId', articlesController.articlesUpdateById);
+articlesRouter.put(
+  '/:articleId',
+  verifyToken,
+  validateArticleUpdate,
+  articlesController.articlesUpdateById
+);
 
 articlesRouter.delete('/:articleId', articlesController.articlesDeleteById);
 

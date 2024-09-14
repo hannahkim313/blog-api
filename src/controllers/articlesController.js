@@ -74,8 +74,7 @@ const articlesCreate = asyncHandler(async (req, res) => {
 });
 
 const articlesGetById = asyncHandler(async (req, res) => {
-  const { articleId } = req.params;
-  const id = parseInt(articleId, 10);
+  const articleId = parseInt(req.params.articleId, 10);
   const { role } = req.user;
   const isAuthor = role === 'author';
 
@@ -91,7 +90,7 @@ const articlesGetById = asyncHandler(async (req, res) => {
         },
       },
     },
-    where: !isAuthor ? { id, isPublished: true } : { id },
+    where: !isAuthor ? { articleId, isPublished: true } : { articleId },
   });
 
   if (!article) {
@@ -101,9 +100,38 @@ const articlesGetById = asyncHandler(async (req, res) => {
   sendResponse(res, 200, { article });
 });
 
-const articlesUpdateById = (req, res) => {
-  res.send('not yet implemented');
-};
+const articlesUpdateById = asyncHandler(async (req, res) => {
+  const articleId = parseInt(req.params.articleId, 10);
+
+  const article = await prisma.article.findUnique({
+    where: { id: articleId },
+    select: { authorId: true },
+  });
+
+  if (!article) {
+    sendResponse(res, 404);
+  }
+
+  const userId = req.user.id;
+
+  if (article.authorId !== userId) {
+    sendResponse(res, 403);
+  }
+
+  const updatedArticle = await prisma.article.update({
+    where: { id: articleId },
+    data: { ...req.body },
+  });
+
+  sendResponse(res, 200, {
+    article: {
+      id: updatedArticle.id,
+      title: updatedArticle.title,
+      content: updatedArticle.content,
+      isPublished: updatedArticle.isPublished,
+    },
+  });
+});
 
 const articlesDeleteById = (req, res) => {
   res.send('not yet implemented');
