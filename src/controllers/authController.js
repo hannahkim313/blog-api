@@ -1,11 +1,8 @@
 require('dotenv').config();
 const asyncHandler = require('express-async-handler');
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const passport = require('passport');
 const prisma = require('../../prisma/prismaClient');
 const { handleValidationErrors } = require('../utils/errorHelpers');
-const { logError } = require('../utils/errorUtils');
 const sendResponse = require('../utils/sendResponse');
 
 const authGetProfile = (req, res) => sendResponse(res, 200, { user: req.user });
