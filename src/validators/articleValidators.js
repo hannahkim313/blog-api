@@ -1,4 +1,4 @@
-const { body } = require('express-validator');
+const { body, check } = require('express-validator');
 const { articleExists } = require('./customValidators');
 
 const validateArticleCreation = [
@@ -42,7 +42,14 @@ const validateArticleUpdate = [
     .withMessage('isPublished must be a boolean'),
 ];
 
+const validateArticleId = [
+  check('articleId')
+    .isInt({ gt: 0 })
+    .withMessage('Article ID must be a positive integer'),
+];
+
 module.exports = {
   validateArticleCreation,
   validateArticleUpdate,
+  validateArticleId,
 };

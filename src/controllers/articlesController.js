@@ -73,9 +73,33 @@ const articlesCreate = asyncHandler(async (req, res) => {
   });
 });
 
-const articlesGetById = (req, res) => {
-  res.send('not yet implemented');
-};
+const articlesGetById = asyncHandler(async (req, res) => {
+  const { articleId } = req.params;
+  const id = parseInt(articleId, 10);
+  const { role } = req.user;
+  const isAuthor = role === 'author';
+
+  const article = await prisma.article.findUnique({
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      author: {
+        select: {
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
+    where: !isAuthor ? { id, isPublished: true } : { id },
+  });
+
+  if (!article) {
+    return sendResponse(res, 404);
+  }
+
+  sendResponse(res, 200, { article });
+});
 
 const articlesUpdateById = (req, res) => {
   res.send('not yet implemented');

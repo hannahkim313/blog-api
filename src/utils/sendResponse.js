@@ -7,6 +7,7 @@ const statusMessages = {
   400: 'Bad Request',
   401: 'Unauthorized',
   403: 'You do not have permission to access this resource',
+  404: 'Resource not found',
   500: 'Internal Server Error',
 };
 

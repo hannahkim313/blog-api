@@ -2,7 +2,10 @@ const { Router } = require('express');
 const articlesController = require('../controllers/articlesController');
 const verifyToken = require('../middleware/verifyToken');
 const authorizeRoles = require('../middleware/authorizeRoles');
-const { validateArticleCreation } = require('../validators/articleValidators');
+const {
+  validateArticleCreation,
+  validateArticleId,
+} = require('../validators/articleValidators');
 
 const articlesRouter = Router();
 
@@ -16,7 +19,12 @@ articlesRouter.post(
   articlesController.articlesCreate
 );
 
-articlesRouter.get('/:articleId', articlesController.articlesGetById);
+articlesRouter.get(
+  '/:articleId',
+  verifyToken,
+  validateArticleId,
+  articlesController.articlesGetById
+);
 
 articlesRouter.put('/:articleId', articlesController.articlesUpdateById);
 
