@@ -7,6 +7,7 @@ const {
 const validateLogin = require('../validators/loginValidators');
 const verifyToken = require('../middleware/verifyToken');
 const authorizeRoles = require('../middleware/authorizeRoles');
+const authenticateUser = require('../middleware/authenticateUser');
 
 const authRouter = Router();
 
@@ -34,7 +35,12 @@ authRouter.delete(
 
 authRouter.post('/register', validateUserCreation, authController.authRegister);
 
-authRouter.post('/login', validateLogin, authController.authLogin);
+authRouter.post(
+  '/login',
+  validateLogin,
+  authenticateUser('local'),
+  authController.authLogin
+);
 
 authRouter.post('/logout', authController.authLogout);
 
