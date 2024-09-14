@@ -11,7 +11,17 @@ const articlesGetAll = asyncHandler(async (req, res) => {
   const articles = await prisma.article.findMany({
     skip: (page - 1) * pageSize,
     take: parseInt(pageSize, 10),
-    select: { id: true, title: true },
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      author: {
+        select: {
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
     where: !isAuthor ? { isPublished: true } : {},
   });
 
