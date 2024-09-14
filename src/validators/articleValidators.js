@@ -1,4 +1,5 @@
 const { body } = require('express-validator');
+const { articleExists } = require('./customValidators');
 
 const validateArticleCreation = [
   body('title')
@@ -6,7 +7,8 @@ const validateArticleCreation = [
     .notEmpty()
     .withMessage('Title is required')
     .isLength({ min: 1, max: 255 })
-    .withMessage('Title must be between 1 and 255 characters'),
+    .withMessage('Title must be between 1 and 255 characters')
+    .custom(articleExists),
   body('content')
     .trim()
     .notEmpty()

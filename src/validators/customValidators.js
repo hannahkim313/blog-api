@@ -84,10 +84,27 @@ const isValidPassword = async (password, { req }) => {
   }
 };
 
+const articleExists = async (title) => {
+  try {
+    const article = await prisma.article.findFirst({
+      where: { title },
+    });
+
+    if (article) {
+      throw new Error('An article with this title already exists.');
+    }
+
+    return true;
+  } catch (err) {
+    return handleCustomErrors(err);
+  }
+};
+
 module.exports = {
   usernameExists,
   emailExists,
   passwordsMatch,
   isValidUsername,
   isValidPassword,
+  articleExists,
 };

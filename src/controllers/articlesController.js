@@ -50,10 +50,26 @@ const articlesCreate = asyncHandler(async (req, res) => {
       authorId: req.user.id,
       isPublished,
     },
+    include: {
+      author: {
+        select: {
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
   });
 
   sendResponse(res, 201, {
-    articleId: newArticle.id,
+    article: {
+      id: newArticle.id,
+      title: newArticle.title,
+      content: newArticle.content,
+      author: {
+        firstName: newArticle.author.firstName,
+        lastName: newArticle.author.lastName,
+      },
+    },
   });
 });
 
