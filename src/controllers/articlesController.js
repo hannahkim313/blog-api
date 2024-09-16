@@ -15,6 +15,7 @@ const articlesGetAll = asyncHandler(async (req, res) => {
       id: true,
       title: true,
       content: true,
+      isPublished: isAuthor,
       author: {
         select: {
           firstName: true,
@@ -65,6 +66,7 @@ const articlesCreate = asyncHandler(async (req, res) => {
       id: newArticle.id,
       title: newArticle.title,
       content: newArticle.content,
+      isPublished: newArticle.isPublished,
       author: {
         firstName: newArticle.author.firstName,
         lastName: newArticle.author.lastName,
@@ -83,6 +85,7 @@ const articlesGetById = asyncHandler(async (req, res) => {
       id: true,
       title: true,
       content: true,
+      isPublished: isAuthor,
       author: {
         select: {
           firstName: true,
@@ -90,7 +93,7 @@ const articlesGetById = asyncHandler(async (req, res) => {
         },
       },
     },
-    where: !isAuthor ? { articleId, isPublished: true } : { articleId },
+    where: !isAuthor ? { id: articleId, isPublished: true } : { id: articleId },
   });
 
   if (!article) {
