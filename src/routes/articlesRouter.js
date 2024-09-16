@@ -34,6 +34,10 @@ articlesRouter.put(
   articlesController.articlesUpdateById
 );
 
-articlesRouter.delete('/:articleId', articlesController.articlesDeleteById);
+articlesRouter.delete(
+  '/:articleId',
+  verifyToken,
+  articlesController.articlesDeleteById
+);
 
 module.exports = articlesRouter;
