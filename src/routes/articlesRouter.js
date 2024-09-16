@@ -31,12 +31,14 @@ articlesRouter.put(
   '/:articleId',
   verifyToken,
   validateArticleUpdate,
+  validateArticleId,
   articlesController.articlesUpdateById
 );
 
 articlesRouter.delete(
   '/:articleId',
   verifyToken,
+  validateArticleId,
   articlesController.articlesDeleteById
 );
 

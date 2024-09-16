@@ -76,6 +76,10 @@ const articlesCreate = asyncHandler(async (req, res) => {
 });
 
 const articlesGetById = asyncHandler(async (req, res) => {
+  if (handleValidationErrors(req, res, 400)) {
+    return;
+  }
+
   const articleId = parseInt(req.params.articleId, 10);
   const { role } = req.user;
   const isAuthor = role === 'author';
@@ -104,6 +108,10 @@ const articlesGetById = asyncHandler(async (req, res) => {
 });
 
 const articlesUpdateById = asyncHandler(async (req, res) => {
+  if (handleValidationErrors(req, res, 400)) {
+    return;
+  }
+
   const articleId = parseInt(req.params.articleId, 10);
 
   const article = await prisma.article.findUnique({
@@ -137,6 +145,10 @@ const articlesUpdateById = asyncHandler(async (req, res) => {
 });
 
 const articlesDeleteById = asyncHandler(async (req, res) => {
+  if (handleValidationErrors(req, res, 400)) {
+    return;
+  }
+
   const articleId = parseInt(req.params.articleId, 10);
 
   const article = await prisma.article.findUnique({
