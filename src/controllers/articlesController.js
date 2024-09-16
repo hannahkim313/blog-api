@@ -114,21 +114,6 @@ const articlesUpdateById = asyncHandler(async (req, res) => {
 
   const articleId = parseInt(req.params.articleId, 10);
 
-  const article = await prisma.article.findUnique({
-    where: { id: articleId },
-    select: { authorId: true },
-  });
-
-  if (!article) {
-    sendResponse(res, 404);
-  }
-
-  const userId = req.user.id;
-
-  if (article.authorId !== userId) {
-    sendResponse(res, 403);
-  }
-
   const updatedArticle = await prisma.article.update({
     where: { id: articleId },
     data: { ...req.body },
@@ -150,21 +135,6 @@ const articlesDeleteById = asyncHandler(async (req, res) => {
   }
 
   const articleId = parseInt(req.params.articleId, 10);
-
-  const article = await prisma.article.findUnique({
-    where: { id: articleId },
-    select: { authorId: true },
-  });
-
-  if (!article) {
-    sendResponse(res, 404);
-  }
-
-  const userId = req.user.id;
-
-  if (article.authorId !== userId) {
-    sendResponse(res, 403);
-  }
 
   await prisma.article.delete({
     where: { id: articleId },
