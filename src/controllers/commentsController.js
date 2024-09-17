@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const prisma = require('../../prisma/prismaClient');
 const sendResponse = require('../utils/sendResponse');
+const { handleValidationErrors } = require('../utils/errorHelpers');
 
 const commentsGetAll = asyncHandler(async (req, res) => {
   const articleId = parseInt(req.params.articleId, 10);
@@ -39,6 +40,7 @@ const commentsGetAll = asyncHandler(async (req, res) => {
     where: { articleId: article.id },
   });
 
+  // FIXME: include isAuthor in each comment
   sendResponse(res, 200, {
     comments,
     totalPages: Math.ceil(totalComments / pageSize),
@@ -46,9 +48,46 @@ const commentsGetAll = asyncHandler(async (req, res) => {
   });
 });
 
-const commentsCreate = (req, res) => {
-  res.send('not yet implemented');
-};
+const commentsCreate = asyncHandler(async (req, res) => {
+  if (handleValidationErrors(req, res, 400)) {
+    return;
+  }
+
+  const { content } = req.body;
+  const userId = req.user.id;
+  const articleId = parseInt(req.params.articleId, 10);
+
+  const newComment = await prisma.comment.create({
+    data: {
+      content,
+      articleId,
+      userId,
+    },
+    include: {
+      user: {
+        select: {
+          firstName: true,
+        },
+      },
+    },
+  });
+
+  const role = req.user.role;
+  const isAuthor = role === 'author';
+
+  sendResponse(res, 201, {
+    comment: {
+      id: newComment.id,
+      content: newComment.content,
+      articleId: newComment.articleId,
+      user: {
+        firstName: newComment.user.firstName,
+        isAuthor,
+      },
+      createdAt: newComment.createdAt,
+    },
+  });
+});
 
 const commentsUpdateById = (req, res) => {
   res.send('not yet implemented');
