@@ -71,7 +71,7 @@ const authRegister = asyncHandler(async (req, res) => {
   const { firstName, lastName, email, username, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  await prisma.user.create({
+  const newUser = await prisma.user.create({
     data: {
       firstName,
       lastName,
@@ -81,7 +81,14 @@ const authRegister = asyncHandler(async (req, res) => {
     },
   });
 
-  sendResponse(res, 201);
+  sendResponse(res, 201, {
+    user: {
+      id: newUser.id,
+      firstName: newUser.firstName,
+      lastName: newUser.lastName,
+      username: newUser.username,
+    },
+  });
 });
 
 const authLogin = asyncHandler(async (req, res) => {
