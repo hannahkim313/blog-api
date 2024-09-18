@@ -50,7 +50,6 @@ const authUpdateProfile = asyncHandler(async (req, res) => {
       id: updatedUser.id,
       firstName: updatedUser.firstName,
       lastName: updatedUser.lastName,
-      email: updatedUser.email,
       username: updatedUser.username,
     },
   });
