@@ -37,6 +37,13 @@ commentsRouter.put(
   commentsController.commentsUpdateById
 );
 
-commentsRouter.delete('/:commentId', commentsController.commentsDeleteById);
+commentsRouter.delete(
+  '/:commentId',
+  verifyToken,
+  authorizeRoles(['author', 'user']),
+  validateArticleId,
+  validateCommentId,
+  commentsController.commentsDeleteById
+);
 
 module.exports = commentsRouter;

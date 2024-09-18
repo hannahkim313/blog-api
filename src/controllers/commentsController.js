@@ -157,9 +157,25 @@ const commentsUpdateById = asyncHandler(async (req, res) => {
   });
 });
 
-const commentsDeleteById = (req, res) => {
-  res.send('not yet implemented');
-};
+const commentsDeleteById = asyncHandler(async (req, res) => {
+  if (handleValidationErrors(req, res, 400)) {
+    return;
+  }
+
+  const isCommentAuthor = await checkCommentOwnership(req);
+
+  if (!isCommentAuthor) {
+    return sendResponse(res, 403);
+  }
+
+  const commentId = parseInt(req.params.commentId, 10);
+
+  await prisma.comment.delete({
+    where: { id: commentId },
+  });
+
+  sendResponse(res, 204);
+});
 
 module.exports = {
   commentsGetAll,
