@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "debug:watch": "nodemon --inspect --watch 'src/**/*.js' src/app.js"
+    "debug:watch": "nodemon --inspect --watch 'src/**/*.js' src/app.js",
+    "seed": "node prisma/seed.js"
   },
   "keywords": [],
   "author": "",
