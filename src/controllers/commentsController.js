@@ -2,7 +2,10 @@ const asyncHandler = require('express-async-handler');
 const prisma = require('../../prisma/prismaClient');
 const sendResponse = require('../utils/sendResponse');
 const { handleValidationErrors } = require('../utils/errorHelpers');
-const { checkCommentOwnership } = require('../utils/commentUtils');
+const {
+  checkCommentOwnership,
+  checkArticlePublication,
+} = require('../utils/commentUtils');
 
 const commentsGetAll = asyncHandler(async (req, res) => {
   const articleId = parseInt(req.params.articleId, 10);
@@ -60,6 +63,12 @@ const commentsCreate = asyncHandler(async (req, res) => {
     return;
   }
 
+  const isArticlePublished = await checkArticlePublication(req);
+
+  if (!isArticlePublished) {
+    return sendResponse(res, 403);
+  }
+
   const { content } = req.body;
   const userId = req.user.id;
   const articleId = parseInt(req.params.articleId, 10);
@@ -99,6 +108,12 @@ const commentsCreate = asyncHandler(async (req, res) => {
 const commentsUpdateById = asyncHandler(async (req, res) => {
   if (handleValidationErrors(req, res, 400)) {
     return;
+  }
+
+  const isArticlePublished = await checkArticlePublication(req);
+
+  if (!isArticlePublished) {
+    return sendResponse(res, 403);
   }
 
   const isCommentAuthor = await checkCommentOwnership(req);

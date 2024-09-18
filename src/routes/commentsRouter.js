@@ -8,7 +8,6 @@ const {
   validateCommentUpdate,
   validateCommentId,
 } = require('../validators/commentValidators');
-const checkArticlePublication = require('../middleware/checkArticlePublication');
 
 const commentsRouter = Router({ mergeParams: true });
 
@@ -23,7 +22,6 @@ commentsRouter.post(
   '/',
   verifyToken,
   validateArticleId,
-  checkArticlePublication,
   authorizeRoles(['author', 'user']),
   validateComment,
   commentsController.commentsCreate
@@ -34,7 +32,6 @@ commentsRouter.put(
   verifyToken,
   validateArticleId,
   validateCommentId,
-  checkArticlePublication,
   authorizeRoles(['author', 'user']),
   validateCommentUpdate,
   commentsController.commentsUpdateById
