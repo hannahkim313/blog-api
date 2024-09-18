@@ -31,6 +31,7 @@ articlesRouter.get(
 articlesRouter.put(
   '/:articleId',
   verifyToken,
+  authorizeRoles(['author']),
   validateArticleId,
   checkArticleOwnership,
   validateArticleUpdate,
@@ -40,6 +41,7 @@ articlesRouter.put(
 articlesRouter.delete(
   '/:articleId',
   verifyToken,
+  authorizeRoles(['author']),
   validateArticleId,
   checkArticleOwnership,
   articlesController.articlesDeleteById
