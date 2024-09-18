@@ -10,6 +10,7 @@ const articlesGetAll = asyncHandler(async (req, res) => {
   const isAuthor = role === 'author';
 
   const articles = await prisma.article.findMany({
+    where: !isAuthor ? { isPublished: true } : {},
     skip: (page - 1) * pageSize,
     take: parseInt(pageSize, 10),
     select: {
@@ -24,7 +25,6 @@ const articlesGetAll = asyncHandler(async (req, res) => {
         },
       },
     },
-    where: !isAuthor ? { isPublished: true } : {},
   });
 
   const totalArticles = await prisma.article.count({
@@ -84,8 +84,12 @@ const articlesGetById = asyncHandler(async (req, res) => {
   const articleId = parseInt(req.params.articleId, 10);
   const { role } = req.user;
   const isAuthor = role === 'author';
+  const isArticleAuthor = await checkArticleOwnership(req, res);
 
   const article = await prisma.article.findUnique({
+    where: !isArticleAuthor
+      ? { id: articleId, isPublished: true }
+      : { id: articleId },
     select: {
       id: true,
       title: true,
@@ -98,7 +102,6 @@ const articlesGetById = asyncHandler(async (req, res) => {
         },
       },
     },
-    where: !isAuthor ? { id: articleId, isPublished: true } : { id: articleId },
   });
 
   if (!article) {
