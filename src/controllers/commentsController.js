@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const prisma = require('../../prisma/prismaClient');
 const sendResponse = require('../utils/sendResponse');
 const { handleValidationErrors } = require('../utils/errorHelpers');
+const { checkCommentOwnership } = require('../utils/commentUtils');
 
 const commentsGetAll = asyncHandler(async (req, res) => {
   const articleId = parseInt(req.params.articleId, 10);
@@ -95,9 +96,50 @@ const commentsCreate = asyncHandler(async (req, res) => {
   });
 });
 
-const commentsUpdateById = (req, res) => {
-  res.send('not yet implemented');
-};
+const commentsUpdateById = asyncHandler(async (req, res) => {
+  if (handleValidationErrors(req, res, 400)) {
+    return;
+  }
+
+  const isCommentAuthor = await checkCommentOwnership(req);
+
+  if (!isCommentAuthor) {
+    return sendResponse(res, 403);
+  }
+
+  const commentId = parseInt(req.params.commentId, 10);
+  const { content } = req.body;
+
+  const updatedComment = await prisma.comment.update({
+    where: { id: commentId },
+    data: {
+      content,
+    },
+    include: {
+      user: {
+        select: {
+          firstName: true,
+        },
+      },
+    },
+  });
+
+  const role = req.user.role;
+  const isAuthor = role === 'author';
+
+  sendResponse(res, 201, {
+    comment: {
+      id: updatedComment.id,
+      content: updatedComment.content,
+      articleId: updatedComment.articleId,
+      user: {
+        firstName: updatedComment.user.firstName,
+      },
+      updatedAt: updatedComment.updatedAt,
+      isAuthor,
+    },
+  });
+});
 
 const commentsDeleteById = (req, res) => {
   res.send('not yet implemented');

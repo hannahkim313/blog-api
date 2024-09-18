@@ -3,7 +3,11 @@ const commentsController = require('../controllers/commentsController');
 const { validateArticleId } = require('../validators/articleValidators');
 const verifyToken = require('../middleware/verifyToken');
 const authorizeRoles = require('../middleware/authorizeRoles');
-const { validateComment } = require('../validators/commentValidators');
+const {
+  validateComment,
+  validateCommentUpdate,
+  validateCommentId,
+} = require('../validators/commentValidators');
 const checkArticlePublication = require('../middleware/checkArticlePublication');
 
 const commentsRouter = Router({ mergeParams: true });
@@ -25,7 +29,16 @@ commentsRouter.post(
   commentsController.commentsCreate
 );
 
-commentsRouter.put('/:commentId', commentsController.commentsUpdateById);
+commentsRouter.put(
+  '/:commentId',
+  verifyToken,
+  validateArticleId,
+  validateCommentId,
+  checkArticlePublication,
+  authorizeRoles(['author', 'user']),
+  validateCommentUpdate,
+  commentsController.commentsUpdateById
+);
 
 commentsRouter.delete('/:commentId', commentsController.commentsDeleteById);
 

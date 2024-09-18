@@ -1,4 +1,4 @@
-const { body } = require('express-validator');
+const { body, check } = require('express-validator');
 
 const validateComment = [
   body('content')
@@ -19,7 +19,14 @@ const validateCommentUpdate = [
     .withMessage('Content must be a string'),
 ];
 
+const validateCommentId = [
+  check('commentId')
+    .isInt({ gt: 0 })
+    .withMessage('Comment ID must be a positive integer'),
+];
+
 module.exports = {
   validateComment,
   validateCommentUpdate,
+  validateCommentId,
 };
