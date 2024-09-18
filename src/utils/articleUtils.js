@@ -1,7 +1,7 @@
 const prisma = require('../../prisma/prismaClient');
-const sendResponse = require('../utils/sendResponse');
+const sendResponse = require('./sendResponse');
 
-const checkArticleOwnership = async (req, res, next) => {
+const checkArticleOwnership = async (req, res) => {
   const articleId = parseInt(req.params.articleId, 10);
 
   const article = await prisma.article.findUnique({
@@ -11,15 +11,21 @@ const checkArticleOwnership = async (req, res, next) => {
 
   if (!article) {
     sendResponse(res, 404);
+
+    return false;
   }
 
   const userId = req.user.id;
 
   if (article.authorId !== userId) {
     sendResponse(res, 403);
+
+    return false;
   }
 
-  next();
+  return true;
 };
 
-module.exports = checkArticleOwnership;
+module.exports = {
+  checkArticleOwnership,
+};

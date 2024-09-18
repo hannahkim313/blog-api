@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const prisma = require('../../prisma/prismaClient');
 const sendResponse = require('../utils/sendResponse');
 const { handleValidationErrors } = require('../utils/errorHelpers');
+const { checkArticleOwnership } = require('../utils/articleUtils');
 
 const articlesGetAll = asyncHandler(async (req, res) => {
   const { page = 1, pageSize = 10 } = req.query;
@@ -112,6 +113,12 @@ const articlesUpdateById = asyncHandler(async (req, res) => {
     return;
   }
 
+  const isArticleAuthor = await checkArticleOwnership(req, res);
+
+  if (!isArticleAuthor) {
+    return;
+  }
+
   const articleId = parseInt(req.params.articleId, 10);
 
   const updatedArticle = await prisma.article.update({
@@ -131,6 +138,12 @@ const articlesUpdateById = asyncHandler(async (req, res) => {
 
 const articlesDeleteById = asyncHandler(async (req, res) => {
   if (handleValidationErrors(req, res, 400)) {
+    return;
+  }
+
+  const isArticleAuthor = await checkArticleOwnership(req, res);
+
+  if (!isArticleAuthor) {
     return;
   }
 
