@@ -27,6 +27,7 @@ const commentsGetAll = asyncHandler(async (req, res) => {
     select: {
       id: true,
       content: true,
+      userId: true,
       user: {
         select: {
           firstName: true,
@@ -40,9 +41,14 @@ const commentsGetAll = asyncHandler(async (req, res) => {
     where: { articleId: article.id },
   });
 
-  // FIXME: include isAuthor in each comment
   sendResponse(res, 200, {
-    comments,
+    comments: comments.map((comment) => ({
+      ...comment,
+      user: {
+        ...comment.user,
+        isAuthor: comment.userId === article.authorId,
+      },
+    })),
     totalPages: Math.ceil(totalComments / pageSize),
     currentPage: parseInt(page, 10),
   });
