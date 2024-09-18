@@ -8,24 +8,17 @@ const {
 } = require('../utils/commentUtils');
 
 const commentsGetAll = asyncHandler(async (req, res) => {
-  const articleId = parseInt(req.params.articleId, 10);
-  const { role } = req.user;
-  const isAuthor = role === 'author';
+  const isArticlePublished = await checkArticlePublication(req);
 
-  const article = await prisma.article.findUnique({
-    where: {
-      id: articleId,
-      isPublished: !isAuthor ? true : {},
-    },
-  });
-
-  if (!article) {
-    return sendResponse(res, 404);
+  if (!isArticlePublished) {
+    return sendResponse(res, 403);
   }
 
+  const articleId = parseInt(req.params.articleId, 10);
   const { page = 1, pageSize = 10 } = req.query;
 
   const comments = await prisma.comment.findMany({
+    where: { articleId },
     skip: (page - 1) * pageSize,
     take: parseInt(pageSize, 10),
     select: {
@@ -37,20 +30,25 @@ const commentsGetAll = asyncHandler(async (req, res) => {
           firstName: true,
         },
       },
+      article: {
+        select: {
+          authorId: true,
+        },
+      },
     },
-    where: { articleId: article.id },
   });
 
   const totalComments = await prisma.comment.count({
-    where: { articleId: article.id },
+    where: { articleId },
   });
 
   sendResponse(res, 200, {
     comments: comments.map((comment) => ({
-      ...comment,
+      id: comment.id,
+      content: comment.content,
       user: {
         ...comment.user,
-        isAuthor: comment.userId === article.authorId,
+        isArticleAuthor: comment.userId === comment.article.authorId,
       },
     })),
     totalPages: Math.ceil(totalComments / pageSize),
