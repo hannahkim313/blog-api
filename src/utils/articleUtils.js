@@ -1,7 +1,20 @@
 const prisma = require('../../prisma/prismaClient');
-const sendResponse = require('./sendResponse');
 
-const checkArticleOwnership = async (req, res) => {
+const checkArticleExists = async (req) => {
+  const articleId = parseInt(req.params.articleId, 10);
+
+  const article = await prisma.article.findUnique({
+    where: { id: articleId },
+  });
+
+  if (!article) {
+    return false;
+  }
+
+  return true;
+};
+
+const checkArticleOwnership = async (req) => {
   const articleId = parseInt(req.params.articleId, 10);
 
   const article = await prisma.article.findUnique({
@@ -9,17 +22,9 @@ const checkArticleOwnership = async (req, res) => {
     select: { authorId: true },
   });
 
-  if (!article) {
-    sendResponse(res, 404);
-
-    return false;
-  }
-
   const userId = req.user.id;
 
   if (article.authorId !== userId) {
-    sendResponse(res, 403);
-
     return false;
   }
 
@@ -27,5 +32,6 @@ const checkArticleOwnership = async (req, res) => {
 };
 
 module.exports = {
+  checkArticleExists,
   checkArticleOwnership,
 };

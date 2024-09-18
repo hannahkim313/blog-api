@@ -2,7 +2,10 @@ const asyncHandler = require('express-async-handler');
 const prisma = require('../../prisma/prismaClient');
 const sendResponse = require('../utils/sendResponse');
 const { handleValidationErrors } = require('../utils/errorHelpers');
-const { checkArticleOwnership } = require('../utils/articleUtils');
+const {
+  checkArticleExists,
+  checkArticleOwnership,
+} = require('../utils/articleUtils');
 
 const articlesGetAll = asyncHandler(async (req, res) => {
   const { page = 1, pageSize = 10 } = req.query;
@@ -81,10 +84,16 @@ const articlesGetById = asyncHandler(async (req, res) => {
     return;
   }
 
+  const articleExists = await checkArticleExists(req);
+
+  if (!articleExists) {
+    return sendResponse(res, 404);
+  }
+
   const articleId = parseInt(req.params.articleId, 10);
   const { role } = req.user;
   const isAuthor = role === 'author';
-  const isArticleAuthor = await checkArticleOwnership(req, res);
+  const isArticleAuthor = await checkArticleOwnership(req);
 
   const article = await prisma.article.findUnique({
     where: !isArticleAuthor
@@ -116,10 +125,16 @@ const articlesUpdateById = asyncHandler(async (req, res) => {
     return;
   }
 
-  const isArticleAuthor = await checkArticleOwnership(req, res);
+  const articleExists = await checkArticleExists(req);
+
+  if (!articleExists) {
+    return sendResponse(res, 404);
+  }
+
+  const isArticleAuthor = await checkArticleOwnership(req);
 
   if (!isArticleAuthor) {
-    return;
+    return sendResponse(res, 403);
   }
 
   const articleId = parseInt(req.params.articleId, 10);
@@ -144,10 +159,16 @@ const articlesDeleteById = asyncHandler(async (req, res) => {
     return;
   }
 
-  const isArticleAuthor = await checkArticleOwnership(req, res);
+  const articleExists = await checkArticleExists(req);
+
+  if (!articleExists) {
+    return sendResponse(res, 404);
+  }
+
+  const isArticleAuthor = await checkArticleOwnership(req);
 
   if (!isArticleAuthor) {
-    return;
+    return sendResponse(res, 403);
   }
 
   const articleId = parseInt(req.params.articleId, 10);
