@@ -135,22 +135,24 @@ const commentsUpdateById = asyncHandler(async (req, res) => {
           firstName: true,
         },
       },
+      article: {
+        select: {
+          authorId: true,
+        },
+      },
     },
   });
-
-  const role = req.user.role;
-  const isAuthor = role === 'author';
 
   sendResponse(res, 201, {
     comment: {
       id: updatedComment.id,
       content: updatedComment.content,
-      articleId: updatedComment.articleId,
       user: {
         firstName: updatedComment.user.firstName,
+        isArticleAuthor:
+          updatedComment.userId === updatedComment.article.authorId,
       },
       updatedAt: updatedComment.updatedAt,
-      isAuthor,
     },
   });
 });

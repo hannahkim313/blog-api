@@ -30,9 +30,9 @@ commentsRouter.post(
 commentsRouter.put(
   '/:commentId',
   verifyToken,
+  authorizeRoles(['author', 'user']),
   validateArticleId,
   validateCommentId,
-  authorizeRoles(['author', 'user']),
   validateCommentUpdate,
   commentsController.commentsUpdateById
 );
