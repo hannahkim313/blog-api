@@ -5,7 +5,28 @@ const prisma = require('../../prisma/prismaClient');
 const { handleValidationErrors } = require('../utils/errorHelpers');
 const sendResponse = require('../utils/sendResponse');
 
-const authGetProfile = (req, res) => sendResponse(res, 200, { user: req.user });
+const authGetProfile = asyncHandler(async (req, res) => {
+  const { id, role } = req.user;
+
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: {
+      firstName: true,
+      lastName: true,
+      username: true,
+    },
+  });
+
+  sendResponse(res, 200, {
+    user: {
+      id,
+      role,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      username: user.username,
+    },
+  });
+});
 
 const authUpdateProfile = asyncHandler(async (req, res) => {
   if (handleValidationErrors(req, res, 400)) {
