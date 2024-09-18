@@ -74,8 +74,8 @@ const commentsCreate = asyncHandler(async (req, res) => {
   const newComment = await prisma.comment.create({
     data: {
       content,
-      articleId,
       userId,
+      articleId,
     },
     include: {
       user: {
@@ -83,20 +83,21 @@ const commentsCreate = asyncHandler(async (req, res) => {
           firstName: true,
         },
       },
+      article: {
+        select: {
+          authorId: true,
+        },
+      },
     },
   });
-
-  const role = req.user.role;
-  const isAuthor = role === 'author';
 
   sendResponse(res, 201, {
     comment: {
       id: newComment.id,
       content: newComment.content,
-      articleId: newComment.articleId,
       user: {
         firstName: newComment.user.firstName,
-        isAuthor,
+        isArticleAuthor: newComment.userId === newComment.article.authorId,
       },
       createdAt: newComment.createdAt,
     },

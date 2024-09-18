@@ -21,8 +21,8 @@ commentsRouter.get(
 commentsRouter.post(
   '/',
   verifyToken,
-  validateArticleId,
   authorizeRoles(['author', 'user']),
+  validateArticleId,
   validateComment,
   commentsController.commentsCreate
 );
