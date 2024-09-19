@@ -163,18 +163,19 @@ const commentsDeleteById = asyncHandler(async (req, res) => {
   }
 
   const isCommentAuthor = await checkCommentOwnership(req);
+  const isUser = req.user.role === 'user';
 
-  if (!isCommentAuthor) {
+  if (!isCommentAuthor && (!req.isArticleAuthor || isUser)) {
     return sendResponse(res, 403);
+  } else {
+    const commentId = parseInt(req.params.commentId, 10);
+
+    await prisma.comment.delete({
+      where: { id: commentId },
+    });
+
+    sendResponse(res, 204);
   }
-
-  const commentId = parseInt(req.params.commentId, 10);
-
-  await prisma.comment.delete({
-    where: { id: commentId },
-  });
-
-  sendResponse(res, 204);
 });
 
 module.exports = {

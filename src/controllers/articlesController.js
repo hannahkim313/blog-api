@@ -2,10 +2,7 @@ const asyncHandler = require('express-async-handler');
 const prisma = require('../../prisma/prismaClient');
 const sendResponse = require('../utils/sendResponse');
 const { handleValidationErrors } = require('../utils/errorHelpers');
-const {
-  checkArticleExists,
-  checkArticleOwnership,
-} = require('../utils/articleUtils');
+const { checkArticleExists } = require('../utils/articleUtils');
 
 const articlesGetAll = asyncHandler(async (req, res) => {
   const { page = 1, pageSize = 10 } = req.query;
@@ -93,10 +90,9 @@ const articlesGetById = asyncHandler(async (req, res) => {
   const articleId = parseInt(req.params.articleId, 10);
   const { role } = req.user;
   const isAuthor = role === 'author';
-  const isArticleAuthor = await checkArticleOwnership(req);
 
   const article = await prisma.article.findUnique({
-    where: !isArticleAuthor
+    where: !req.isArticleAuthor
       ? { id: articleId, isPublished: true }
       : { id: articleId },
     select: {
@@ -131,9 +127,7 @@ const articlesUpdateById = asyncHandler(async (req, res) => {
     return sendResponse(res, 404);
   }
 
-  const isArticleAuthor = await checkArticleOwnership(req);
-
-  if (!isArticleAuthor) {
+  if (!req.isArticleAuthor) {
     return sendResponse(res, 403);
   }
 
@@ -165,9 +159,7 @@ const articlesDeleteById = asyncHandler(async (req, res) => {
     return sendResponse(res, 404);
   }
 
-  const isArticleAuthor = await checkArticleOwnership(req);
-
-  if (!isArticleAuthor) {
+  if (!req.isArticleAuthor) {
     return sendResponse(res, 403);
   }
 

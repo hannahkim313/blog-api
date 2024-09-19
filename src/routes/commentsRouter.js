@@ -8,6 +8,7 @@ const {
   validateCommentUpdate,
   validateCommentId,
 } = require('../validators/commentValidators');
+const checkArticleOwnership = require('../middleware/checkArticleOwnership');
 
 const commentsRouter = Router({ mergeParams: true });
 
@@ -43,6 +44,7 @@ commentsRouter.delete(
   authorizeRoles(['author', 'user']),
   validateArticleId,
   validateCommentId,
+  checkArticleOwnership,
   commentsController.commentsDeleteById
 );
 

@@ -7,6 +7,7 @@ const {
   validateArticleId,
   validateArticleUpdate,
 } = require('../validators/articleValidators');
+const checkArticleOwnership = require('../middleware/checkArticleOwnership');
 
 const articlesRouter = Router();
 
@@ -24,6 +25,7 @@ articlesRouter.get(
   '/:articleId',
   verifyToken,
   validateArticleId,
+  checkArticleOwnership,
   articlesController.articlesGetById
 );
 
@@ -33,6 +35,7 @@ articlesRouter.put(
   authorizeRoles(['author']),
   validateArticleId,
   validateArticleUpdate,
+  checkArticleOwnership,
   articlesController.articlesUpdateById
 );
 
@@ -41,6 +44,7 @@ articlesRouter.delete(
   verifyToken,
   authorizeRoles(['author']),
   validateArticleId,
+  checkArticleOwnership,
   articlesController.articlesDeleteById
 );
 
