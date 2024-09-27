@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
+const cors = require('cors');
 const passport = require('passport');
 require('./config/passport');
 const authRouter = require('./routes/authRouter');
@@ -14,9 +15,27 @@ const app = express();
 app.set('views', __dirname);
 app.set('view engine', 'ejs');
 
-// Use middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Configure CORS
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      const message = `CORS policy does not allow access from ${origin}`;
+      callback(new Error(message), false);
+    }
+  },
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
