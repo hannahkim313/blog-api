@@ -24,17 +24,17 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, origin);
+      callback(null, true);
     } else {
       const message = `CORS policy does not allow access from ${origin}`;
       callback(new Error(message), false);
     }
   },
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  methods: 'GET,PUT,POST,DELETE,OPTIONS',
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
 
-app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 
 app.use(
