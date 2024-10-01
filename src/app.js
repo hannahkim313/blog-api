@@ -24,7 +24,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
+      callback(null, origin);
     } else {
       const message = `CORS policy does not allow access from ${origin}`;
       callback(new Error(message), false);
@@ -34,6 +34,7 @@ const corsOptions = {
   credentials: true,
 };
 
+app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 
 app.use(
