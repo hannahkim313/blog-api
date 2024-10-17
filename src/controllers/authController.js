@@ -95,6 +95,8 @@ const authLogin = asyncHandler(async (req, res) => {
   if (handleValidationErrors(req, res, 401)) {
     return;
   }
+
+  sendResponse(res, 200);
 });
 
 const authLogout = (req, res) => sendResponse(res, 200);
