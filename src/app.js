@@ -52,7 +52,7 @@ app.use('/blog/auth', authRouter);
 app.use('/blog/articles', articlesRouter);
 app.use('/blog/articles/:articleId/comments', commentsRouter);
 
-// User error-handling middleware
+// Use error-handling middleware
 app.use((err, req, res, next) => {
   logError(err.stack);
   sendResponse(res, 500);
