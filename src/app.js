@@ -48,9 +48,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Define the routes
-app.use('/blog/auth', authRouter);
-app.use('/blog/articles', articlesRouter);
-app.use('/blog/articles/:articleId/comments', commentsRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/articles', articlesRouter);
+app.use('/api/articles/:articleId/comments', commentsRouter);
 
 // Use error-handling middleware
 app.use((err, req, res, next) => {
