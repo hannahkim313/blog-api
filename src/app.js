@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const passport = require('passport');
 require('./config/passport');
@@ -12,15 +14,13 @@ const { logError } = require('./utils/errorUtils');
 
 const app = express();
 
-app.set('views', __dirname);
-app.set('view engine', 'ejs');
-
+// Middleware
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configure CORS
+// CORS configuration
 const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
-
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -34,9 +34,17 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
-
 app.use(cors(corsOptions));
 
+// Rate limiter
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 100,
+  message: 'Too many requests from this IP. Please try again later.',
+});
+app.use(limiter);
+
+// Session and Passport initialization
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -47,17 +55,17 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Define the routes
+// Define routes
 app.use('/api/auth', authRouter);
 app.use('/api/articles', articlesRouter);
 app.use('/api/articles/:articleId/comments', commentsRouter);
 
-// Use error-handling middleware
+// Error-handling middleware
 app.use((err, req, res, next) => {
   logError(err.stack);
   sendResponse(res, 500);
 });
 
-// Define the server
+// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}!`));
