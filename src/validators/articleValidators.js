@@ -9,6 +9,12 @@ const validateArticleCreation = [
     .isLength({ min: 1, max: 255 })
     .withMessage('Title must be between 1 and 255 characters')
     .custom(articleExists),
+  body('description')
+    .trim()
+    .notEmpty()
+    .withMessage('Description is required')
+    .isLength({ min: 0, max: 255 })
+    .withMessage('Description must be between 1 and 255 characters'),
   body('content')
     .trim()
     .notEmpty()
@@ -29,6 +35,13 @@ const validateArticleUpdate = [
     .withMessage('Title is required')
     .isLength({ min: 1, max: 255 })
     .withMessage('Title must be between 1 and 255 characters'),
+  body('description')
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage('Description is required')
+    .isLength({ min: 0, max: 255 })
+    .withMessage('Description must be between 1 and 255 characters'),
   body('content')
     .optional()
     .trim()
