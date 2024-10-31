@@ -106,7 +106,7 @@ const articlesGetById = asyncHandler(async (req, res) => {
       title: true,
       content: true,
       isPublished: isAuthor,
-      createdAt: createdAt,
+      createdAt: true,
       author: {
         select: {
           firstName: true,
