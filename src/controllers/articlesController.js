@@ -16,6 +16,7 @@ const articlesGetAll = asyncHandler(async (req, res) => {
     select: {
       id: true,
       title: true,
+      description: true,
       content: true,
       isPublished: isAuthor,
       author: {
