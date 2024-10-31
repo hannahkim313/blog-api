@@ -20,6 +20,7 @@ const articlesGetAll = asyncHandler(async (req, res) => {
       content: true,
       isPublished: isAuthor,
       createdAt: true,
+      url: true,
       author: {
         select: {
           firstName: true,
@@ -45,7 +46,7 @@ const articlesCreate = asyncHandler(async (req, res) => {
     return;
   }
 
-  const { title, description, content, isPublished } = req.body;
+  const { title, description, content, isPublished, url } = req.body;
 
   const newArticle = await prisma.article.create({
     data: {
@@ -54,6 +55,7 @@ const articlesCreate = asyncHandler(async (req, res) => {
       content,
       authorId: req.user.id,
       isPublished,
+      url,
     },
     include: {
       author: {
@@ -73,6 +75,7 @@ const articlesCreate = asyncHandler(async (req, res) => {
       content: newArticle.content,
       isPublished: newArticle.isPublished,
       createdAt: newArticle.createdAt,
+      url: newArticle.url,
       author: {
         firstName: newArticle.author.firstName,
         lastName: newArticle.author.lastName,
@@ -107,6 +110,7 @@ const articlesGetById = asyncHandler(async (req, res) => {
       content: true,
       isPublished: isAuthor,
       createdAt: true,
+      url: true,
       author: {
         select: {
           firstName: true,
@@ -152,6 +156,7 @@ const articlesUpdateById = asyncHandler(async (req, res) => {
       description: updatedArticle.description,
       content: updatedArticle.content,
       isPublished: updatedArticle.isPublished,
+      url: updatedArticle.url,
     },
   });
 });
