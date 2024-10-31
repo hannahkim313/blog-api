@@ -25,6 +25,14 @@ const validateArticleCreation = [
     .optional()
     .isBoolean()
     .withMessage('isPublished must be a boolean'),
+  body('url')
+    .trim()
+    .notEmpty()
+    .withMessage('Url is required')
+    .isLength({ min: 1, max: 255 })
+    .withMessage('Url must be between 1 and 255 characters')
+    .isString()
+    .withMessage('Url must be a string'),
 ];
 
 const validateArticleUpdate = [
@@ -53,6 +61,15 @@ const validateArticleUpdate = [
     .optional()
     .isBoolean()
     .withMessage('isPublished must be a boolean'),
+  body('url')
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage('Url is required')
+    .isLength({ min: 1, max: 255 })
+    .withMessage('Url must be between 1 and 255 characters')
+    .isString()
+    .withMessage('Url must be a string'),
 ];
 
 const validateArticleId = [
