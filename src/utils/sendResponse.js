@@ -24,7 +24,7 @@ const sendResponse = (res, status, data = {}) => {
   return res.status(status).json({
     status,
     message: statusMessages[status],
-    data,
+    ...data,
   });
 };
 
