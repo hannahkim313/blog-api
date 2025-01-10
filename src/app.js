@@ -1,11 +1,15 @@
 require('dotenv').config();
+
 const express = require('express');
 const session = require('express-session');
+const RedisStore = require('connect-redis')(session);
+const Redis = require('ioredis');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const passport = require('passport');
 require('./config/passport');
+
 const authRouter = require('./routes/authRouter');
 const articlesRouter = require('./routes/articlesRouter');
 const commentsRouter = require('./routes/commentsRouter');
@@ -14,9 +18,26 @@ const { logError } = require('./utils/errorUtils');
 
 const app = express();
 
-app.set('trust proxy', 1);
+// Redis client initialization
+const redis = new Redis({
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  password: process.env.REDIS_PASSWORD,
+  db: process.env.REDIS_DB,
+});
+
+// Test Redis connection
+redis.on('connect', () => {
+  console.log('Connected to Redis');
+});
+
+redis.on('error', (err) => {
+  console.error('Error connecting to Redis:', err);
+});
 
 // Middleware
+app.set('trust proxy', 1);
+
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -50,9 +71,11 @@ app.use(limiter);
 // Session and Passport initialization
 app.use(
   session({
+    store: new RedisStore({ client: redis }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: { secure: process.env.NODE_ENV === 'production' },
   })
 );
 app.use(passport.initialize());
